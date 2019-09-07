@@ -27,7 +27,7 @@ def getAudioText(audioPath):
     # Detects speech in the audio file
     response = client.recognize(config, audio)
 
-    audioLines = [result.alternatives[0].transcript for result in response.result]
+    audioLines = [result.alternatives[0].transcript for result in response.results]
     print(audioLines)
     return audioLines
 
