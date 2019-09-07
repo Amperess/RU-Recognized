@@ -1,11 +1,44 @@
 import cv2
-# def getAudioText(videoPath):
-    # videoPath: path to video
-    # return: string of audio in video
+import subprocess
+import io
+import os
+from google.cloud import speech
+from google.cloud.speech import enums
+from google.cloud.speech import types
 
-# def getAudioChunks(audioText):
-    # audioText: string of audio in video
-    # return: list of strings of distinct lines
+"""
+ videoPath: path to video
+ return: string of audio in video
+"""
+def getAudioText(audioPath):
+    # Instantiates a client
+    client = speech.SpeechClient()
+
+    # Loads the audio into memory
+    with io.open(audioPath, 'rb') as audio_file:
+        content = audio_file.read()
+        audio = types.RecognitionAudio(content=content)
+
+    config = types.RecognitionConfig(
+        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=44100,
+        language_code='en-US')
+
+    # Detects speech in the audio file
+    response = client.recognize(config, audio)
+
+    audioLines = [result.alternatives[0].transcript for result in response.result]
+    print(audioLines)
+    return audioLines
+
+"""
+ videoPath: path to video to extract audio from
+ return: path to audio file
+"""
+def getAudio(videoPath):
+    command = "ffmpeg -i {} -ab 160k -ac 1 -ar 44100 -vn {}.wav".format(videoPath, videoPath[:-4])
+    subprocess.call(command, shell=True)
+    return ''.join([videoPath[:-4], ".wav"])
 
 """
  dirname: subdirectory name where to save frames

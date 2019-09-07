@@ -56,14 +56,15 @@ def process_file():
     # celebs = getCelebsFromVideo(videoPath)
     # guess1 = getGuessesFromCelebs(celebs)
 
-    # audioText = getAudioText(videoPath)
+    # audioText = videoProcessing.getAudioText(videoProcessing.getAudio(videoPath))
     # audioTextChunks = getAudioChunks(audioText)
     # respText = reverseSearchText(audioTextChunks)
     # guess2 = parseResponseText(respText)
 
     # guess3 = []
-    framePaths = videoProcessing.getFrames(dirname, videoPath)
-    print("back in app.py with framePaths: ", framePaths)
+    # framePaths = videoProcessing.getFrames(dirname, videoPath)
+
+    # print("back in app.py with framePaths: ", framePaths)
     # iterate through screencaps:
     #   respText2 = reverseSearchImage(screenPath)
     #   guess3.extend(parseResponseText(respText2))
