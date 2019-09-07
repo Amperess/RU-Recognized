@@ -4,6 +4,7 @@ import urllib
 from werkzeug.utils import secure_filename
 
 import videoProcessing
+import revSearchFuncs
 
 UPLOAD_FOLDER = 'movies'
 ALLOWED_EXTENSIONS = {'mp4', "MP4"}
@@ -56,14 +57,15 @@ def process_file():
     # celebs = getCelebsFromVideo(videoPath)
     # guess1 = getGuessesFromCelebs(celebs)
 
-    # audioText = getAudioText(videoPath)
-    # audioTextChunks = getAudioChunks(audioText)
-    # respText = reverseSearchText(audioTextChunks)
+    audioPath = videoProcessing.getAudio(videoPath)
+    audioText = videoProcessing.getAudioText(audioPath)
+    respText = revSearchFuncs.reverseSearchText(audioText)
     # guess2 = parseResponseText(respText)
 
     # guess3 = []
-    framePaths = videoProcessing.getFrames(dirname, videoPath)
-    print("back in app.py with framePaths: ", framePaths)
+    # framePaths = videoProcessing.getFrames(dirname, videoPath)
+
+    # print("back in app.py with framePaths: ", framePaths)
     # iterate through screencaps:
     #   respText2 = reverseSearchImage(screenPath)
     #   guess3.extend(parseResponseText(respText2))
