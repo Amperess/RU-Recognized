@@ -3,6 +3,8 @@ from flask import Flask, flash, request, redirect, url_for
 import urllib
 from werkzeug.utils import secure_filename
 
+import videoProcessing
+
 UPLOAD_FOLDER = 'movies'
 ALLOWED_EXTENSIONS = {'mp4', "MP4"}
 
@@ -28,9 +30,11 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            dirname = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4])
+            os.mkdir(dirname)
+            file.save(os.path.join(dirname,  filename))
             return redirect(url_for('process_file',
-                                    filename=filename))
+                                    dirname = dirname, filename=filename))
     return '''
     <!doctype html>
     <title>Upload new File</title>
@@ -45,29 +49,31 @@ def upload_file():
 # A route to handle processing mp4
 @app.route('/upload', methods=['GET'])
 def process_file():
+    dirname = request.args.get('dirname')
+    filename = request.args.get('filename')
+    videoPath = '/'.join([dirname, filename])
 
-    # video = request.form['Body']
-
-    # celebs = getCelebsFromVideo(video)
+    # celebs = getCelebsFromVideo(videoPath)
     # guess1 = getGuessesFromCelebs(celebs)
 
-    # audioText = getAudioText(video)
+    # audioText = getAudioText(videoPath)
     # audioTextChunks = getAudioChunks(audioText)
     # respText = reverseSearchText(audioTextChunks)
     # guess2 = parseResponseText(respText)
 
     # guess3 = []
-    # screens = getFrames(video, rate)
-    # for screen in screens:
-    #   respText2 = reverseSearchImage(screen)
+    framePaths = videoProcessing.getFrames(dirname, videoPath)
+    print("back in app.py with framePaths: ", framePaths)
+    # iterate through screencaps:
+    #   respText2 = reverseSearchImage(screenPath)
     #   guess3.extend(parseResponseText(respText2))
-    #   screenText = getTextFromFrame(screen)
+    #   screenText = getTextFromFrame(screenPath)
     #   respText3 = reverseSearchText(screenText)
     #   guess3.extend(parseResponseText(respText3))
 
     # finalGuesses = merge(guess1, guess2, guess3)
 
-    return "Hello World " + request.args.get('filename')
+    return "Hello World " + videoPath
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
