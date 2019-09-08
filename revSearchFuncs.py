@@ -1,4 +1,5 @@
 import requests
+import json
 
 textEngineURL = "https://www.googleapis.com/customsearch/v1";
 searchKey = "AIzaSyBVwcr0dHzMlgMk_EC5pbYMrq1WwSpDIZw"
@@ -11,9 +12,12 @@ textSearchCX = "004446501613873659339:okwte2qeapo"
 def reverseSearchText(audioTextChunks):
     for text in audioTextChunks:
         response = requests.get(textEngineURL, params={"key":searchKey, "cx":textSearchCX, "q":text})
-        print(response.request.url)
-        jsonResp = response.json()
-        print(jsonResp)
+        entries = response.json()['items']
+        entries = [[entry['title'], entry['snippet']] for entry in entries]
+        entries = entries[:10]
+        for entry in entries:
+            entry[0] = entry[0].replace('\n', '')
+            entry[1] = entry[1].replace('\n', '')
 
 # def reverseSearchImage(screen):
     # screen: openCV frame object
