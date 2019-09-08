@@ -10,7 +10,7 @@ def getCelebsFromFrame(frame):
         response = client.recognize_celebrities(Image={'Bytes': image.read()})
     celebs=[]
     for celebrity in response['CelebrityFaces']:
-        if len(celebrity['Urls']) > 0:
+        if len(celebrity['Urls']) > 0 and 'imdb' in celebrity['Urls'][0]:
             url = celebrity['Urls'][0]
         else:
             url = None
