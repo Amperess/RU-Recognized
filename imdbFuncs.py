@@ -26,6 +26,8 @@ def bruteForce(text):
 
     movieCounter = Counter()
     for movie in movies:
-        movieCounter += text.count(movie)
+        count = text.count(movie)
+        if count > 0:
+            movieCounter[movie] += count
 
     return movieCounter
