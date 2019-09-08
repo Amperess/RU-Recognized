@@ -21,6 +21,8 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
+    dirname = ""
+    filename = ""
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -37,7 +39,8 @@ def upload_file():
             dirname = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4])
             os.mkdir(dirname)
             file.save(os.path.join(dirname,  filename))
-            return redirect(url_for('process_file',
+            file.save(os.path.join("static", filename))
+            return redirect(url_for('display_video',
                                     dirname = dirname, filename=filename))
     return '''
     <!doctype html>
@@ -48,6 +51,23 @@ def upload_file():
       <input type=submit value=Upload>
     </form>
     '''
+
+@app.route('/display', methods=['GET', 'POST'])
+def display_video():
+    dirname = request.args.get('dirname')
+    filename = request.args.get('filename')
+
+    if request.method == 'POST':
+        return redirect(url_for('process_file', dirname = dirname, filename=filename))
+
+    return '''
+        <!doctype html>
+        <h1>Continue</h1>
+        <form method=post enctype=multipart/form-data>
+          <input type=submit value=Search>
+        </form>
+        <iframe style="min-height:auto; width:auto;" src="{}"></iframe>
+    '''.format("static/"+filename)
 
 
 # A route to handle processing mp4
@@ -110,7 +130,7 @@ def process_file():
         return '''
         <!doctype html>
         <title>The answer is!</title>
-        <h1>This is most likely {}</h1>
+        <h1>This is most likely <span style="color:magenta;">{}</span></h1>
         '''.format(finalGuess)
 
 
