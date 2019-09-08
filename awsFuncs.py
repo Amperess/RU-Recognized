@@ -1,7 +1,7 @@
 import boto3
-""" 
+"""
 framePath: path to frame image
-return: list of 3-tuples of the form (celebrity Name, Confidence, URL) 
+return: list of 3-tuples of the form (celebrity Name, Confidence, URL)
 obtain list of all the celebrities in the frame with the confidence level
 """
 def getCelebsFromFrame(frame):
@@ -15,9 +15,10 @@ def getCelebsFromFrame(frame):
         else:
             url = None
         celebs.append( (celebrity['Name'], celebrity['MatchConfidence'], url) )
+    print(celebs)
     return celebs
 
-""" 
+"""
 frame: path to jpg or png screencap
 return: string of text in the image (or a list if necessary)
 analyze frame and retrieve all relevant text from it
@@ -35,4 +36,3 @@ def getTextFromFrame(frame):
         if text['Confidence'] > 85 and text['Type'] == 'WORD':
             combinedText.append(text['DetectedText'])
     return ' '.join(combinedText)
-

@@ -61,6 +61,9 @@ def getFrames(dirname, videoPath):
 
         success, image = vidObj.read()
 
+        if not success:
+             continue
+             
         framePath = "/".join([dirname, "frame{0}.jpg".format(frameCount)])
 
         print("Saving to ", framePath)

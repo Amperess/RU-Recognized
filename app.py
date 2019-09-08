@@ -56,18 +56,25 @@ def process_file():
     filename = request.args.get('filename')
     videoPath = '/'.join([dirname, filename])
 
-    audioPath = videoProcessing.getAudio(videoPath)
-    audioText = videoProcessing.getAudioText(audioPath)
-    respText = revSearchFuncs.reverseSearchText(audioText)
+    # audioPath = videoProcessing.getAudio(videoPath)
+    # audioText = videoProcessing.getAudioText(audioPath)
+    # respText = revSearchFuncs.reverseSearchText(audioText)
     # guess1 = parseResponseText(respText)
 
-    # framePaths = videoProcessing.getFrames(dirname, videoPath)
+    framePaths = videoProcessing.getFrames(dirname, videoPath)
 
-    # celebs = []
-    # for framePath in framePaths:
-    #    celebs.extend(awsFuncs.getCelebsFromFrame(framePath))
-    # celebs = list(set(celebs))
-    # celebs = [celeb[0] for celeb in celebs if celeb[1] > 0.75]
+    celebs = []
+    for framePath in framePaths:
+        celebs.extend(awsFuncs.getCelebsFromFrame(framePath))
+
+    celebHash = {}
+    for celeb in celebs:
+        if celeb[0] in celebHash:
+            celebHash[celeb[0]] += 1
+        else:
+            celebHash[celeb[0]] = 1
+            
+    print(celebHash)
     # guess2 = imdbFuncs.getGuessesFromCelebs(celebs)
 
     # guess3 = []
