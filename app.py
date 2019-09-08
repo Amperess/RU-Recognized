@@ -1,6 +1,7 @@
 import os
 from flask import Flask, flash, request, redirect, url_for
 import urllib
+import shutil
 from werkzeug.utils import secure_filename
 from collections import Counter
 
@@ -13,6 +14,7 @@ UPLOAD_FOLDER = 'movies'
 ALLOWED_EXTENSIONS = {'mp4', "MP4"}
 
 app = Flask(__name__)
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -39,7 +41,7 @@ def upload_file():
             dirname = os.path.join(app.config['UPLOAD_FOLDER'], filename[:-4])
             os.mkdir(dirname)
             file.save(os.path.join(dirname,  filename))
-            file.save(os.path.join("static", filename))
+            shutil.copyfile(os.path.join(dirname,  filename), os.path.join("static", filename))
             return redirect(url_for('display_video',
                                     dirname = dirname, filename=filename))
     return '''
@@ -136,4 +138,4 @@ def process_file():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host="0.0.0.0", debug=True)
