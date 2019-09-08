@@ -5,6 +5,8 @@ from werkzeug.utils import secure_filename
 
 import videoProcessing
 import revSearchFuncs
+import imdbFuncs
+import awsFuncs
 
 UPLOAD_FOLDER = 'movies'
 ALLOWED_EXTENSIONS = {'mp4', "MP4"}
@@ -54,24 +56,26 @@ def process_file():
     filename = request.args.get('filename')
     videoPath = '/'.join([dirname, filename])
 
-    # celebs = getCelebsFromVideo(videoPath)
-    # guess1 = getGuessesFromCelebs(celebs)
-
     audioPath = videoProcessing.getAudio(videoPath)
     audioText = videoProcessing.getAudioText(audioPath)
     respText = revSearchFuncs.reverseSearchText(audioText)
-    # guess2 = parseResponseText(respText)
+    # guess1 = parseResponseText(respText)
 
-    # guess3 = []
     # framePaths = videoProcessing.getFrames(dirname, videoPath)
 
-    # print("back in app.py with framePaths: ", framePaths)
-    # iterate through screencaps:
-    #   respText2 = reverseSearchImage(screenPath)
-    #   guess3.extend(parseResponseText(respText2))
-    #   screenText = getTextFromFrame(screenPath)
-    #   respText3 = reverseSearchText(screenText)
-    #   guess3.extend(parseResponseText(respText3))
+    # celebs = []
+    # for framePath in framePaths:
+    #    celebs.extend(awsFuncs.getCelebsFromFrame(framePath))
+    # celebs = list(set(celebs))
+    # celebs = [celeb[0] for celeb in celebs if celeb[1] > 0.75]
+    # guess2 = imdbFuncs.getGuessesFromCelebs(celebs)
+
+    # guess3 = []
+    # respText2 = reverseSearchImage(screenPath)
+    # guess3.extend(parseResponseText(respText2))
+    # screenText = getTextFromFrame(screenPath)
+    # respText3 = reverseSearchText(screenText)
+    # guess3.extend(parseResponseText(respText3)
 
     # finalGuesses = merge(guess1, guess2, guess3)
 
