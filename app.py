@@ -2,6 +2,7 @@ import os
 from flask import Flask, flash, request, redirect, url_for
 import urllib
 from werkzeug.utils import secure_filename
+from collections import Counter
 
 import videoProcessing
 import revSearchFuncs
@@ -41,7 +42,7 @@ def upload_file():
     return '''
     <!doctype html>
     <title>Upload new File</title>
-    <h1>Upload new File</h1>
+    <h1>Upload New File</h1>
     <form method=post enctype=multipart/form-data>
       <input type=file name=file>
       <input type=submit value=Upload>
@@ -56,10 +57,12 @@ def process_file():
     filename = request.args.get('filename')
     videoPath = '/'.join([dirname, filename])
 
-    # audioPath = videoProcessing.getAudio(videoPath)
-    # audioText = videoProcessing.getAudioText(audioPath)
-    # respText = revSearchFuncs.reverseSearchText(audioText)
-    # guess1 = parseResponseText(respText)
+    audioPath = videoProcessing.getAudio(videoPath)
+    audioText = videoProcessing.getAudioText(audioPath)
+    respText = revSearchFuncs.reverseSearchText(audioText)
+
+    # screenText = getTextFromFrame(screenPath)
+    # respText2 = reverseSearchText(screenText)
 
     framePaths = videoProcessing.getFrames(dirname, videoPath)
 
@@ -73,20 +76,44 @@ def process_file():
             celebHash[celeb[0]] += 1
         else:
             celebHash[celeb[0]] = 1
-            
+
     print(celebHash)
-    # guess2 = imdbFuncs.getGuessesFromCelebs(celebs)
+    celebList = [(key, val) for key, val in celebHash.items()]
+    celebList = sorted(celebList, key = lambda x: x[1], reverse = True)
+    print(celebList)
+    guess2 = imdbFuncs.getGuessesFromCelebs(celebList)
 
-    # guess3 = []
-    # respText2 = reverseSearchImage(screenPath)
-    # guess3.extend(parseResponseText(respText2))
-    # screenText = getTextFromFrame(screenPath)
-    # respText3 = reverseSearchText(screenText)
-    # guess3.extend(parseResponseText(respText3)
+    movieCounter = Counter()
+    for guess in guess2:
+        movieCounter[guess[0]] += guess[1]
 
-    # finalGuesses = merge(guess1, guess2, guess3)
+    for movie in movieCounter.keys():
+        movieCounter[movie] += respText.count(movie)
 
-    return "Hello World " + videoPath
+    bruteCount = Counter()
+    if len(movieCounter.keys()) == 0:
+        bruteCount = imdbFuncs.bruteForce(respText)
+
+    if len(bruteCount) > 0:
+        movieCounter = bruteCount
+
+    print(movieCounter.most_common())
+
+    if len(movieCounter.most_common(1)) < 1:
+        return '''
+        <!doctype html>
+        <title>The answer is!</title>
+        <h1>We got nothing. Big sad!</h1>
+        '''
+    else:
+        finalGuess = movieCounter.most_common(1)[0][0]
+        return '''
+        <!doctype html>
+        <title>The answer is!</title>
+        <h1>This is most likely {}</h1>
+        '''.format(finalGuess)
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
